@@ -19,6 +19,7 @@ Keypad keypad = Keypad( makeKeymap(keys), rowPins, columnPins, rows, columns ); 
 
 const int relayPins[] = { 9, 10, 11, 12,13}; // Relay out pins
 const int numberOfRelays = 5;
+const int outputPin = 1;
 
 String voltage = "";
 double voltageInput = 0.0;
@@ -68,6 +69,7 @@ void relayControl() {
             }
             else {
                 voltageInput=voltage.toDouble(); // convert string value voltage to double type
+           
                 if(voltageInput >30.0) { 
                     lcd.clear(); // Clear the display buffer
                     lcd.setCursor(0, 0); // Set cursor (Column, Row)
@@ -78,6 +80,9 @@ void relayControl() {
                     lcd.print("Enter Voltage: "); // print "Enter Voltage: " at (0, 0)
                 }
                 else {
+                    double outputVoltage = ((voltageInput - 0) / (35.0 - 0)) * (5.0 - 0) + 0;// Apply linear mapping to convert to 0-5V range
+                    int outputValue = map(outputVoltage, 0, 5, 0, 255); // Convert output voltage to PWM duty cycle (0-255)
+                    analogWrite(outputPin, outputValue);  // Set PWM duty cycle
                     if (voltageInput >= 0 && voltageInput <= 7) {
                         // Control the first relay based on the voltage range 0-7V
                         digitalWrite(relayPins[0], LOW); // Turns ON the first relay and the connected load
